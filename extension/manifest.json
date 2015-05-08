@@ -1,0 +1,14 @@
+{
+  "name":"Inject DOM",
+  "description":"http://stackoverflow.com/questions/14068879",
+  "version":"1",
+  "manifest_version":2,
+  "content_scripts": [
+    {
+      "matches": ["https://www.google.com/*"],
+      "css": ["popup.css"],
+      "js": ["jquery.js", "popup.js"]
+    }
+  ],
+  "web_accessible_resources": ["icons/green_circle.png"]
+}
