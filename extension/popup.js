@@ -7,7 +7,7 @@ $("li.g").each(function(){
         $(this).find(".r").eq(0).parent().html("<table><tr><td>" + $(this).find(".r").eq(0).parent().html() + "</td><td>" + '<img src="' + imgURL +'" alt="green"></td></tr></table>');
       }
   });
-console.log(urls);
+
 $.post("http://localhost:8888/urls", {sites: JSON.stringify(urls)}, function(data) {
     console.log(data);
   });

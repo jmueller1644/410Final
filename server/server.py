@@ -1,20 +1,20 @@
 import tornado.escape
 import tornado.ioloop
 import tornado.web
-import webbrowser
 import json
 import os
-import time
+import requests
+from pyquery import PyQuery as pq
 PORT = 8888
 
-#stock symbols can be downloaded from ftp://ftp.nasdaqtrader.com/SymbolDirectory/nasdaqlisted.txt
-
-#defines what html file to open. Says to open the bar time series
 class URLHandler(tornado.web.RequestHandler):
     def post(self):
-        urls = self.get_argument('sites')
-        print urls
-        self.write({"test": 1});
+        urls = [str(url) for url in json.loads(self.get_argument('sites'))]
+        response = requests.get(urls[0])
+        doc = pq(response.content)
+
+        #doc is pyQuery object and response.content is a string containg html of the url
+        self.write({"firstPage": response.content})
 
 #says what file to open based on the url paths
 application = tornado.web.Application(handlers=[
