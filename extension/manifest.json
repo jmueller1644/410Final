@@ -5,10 +5,13 @@
   "manifest_version":2,
   "content_scripts": [
     {
-      "matches": ["https://www.google.com/*"],
+      "matches": ["http://www.google.com/*"],
       "css": ["popup.css"],
       "js": ["jquery.js", "popup.js"]
     }
+  ],
+  "permissions": [
+    "http://localhost/*"
   ],
   "web_accessible_resources": ["icons/green_circle.png"]
 }
