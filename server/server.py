@@ -12,8 +12,9 @@ PORT = 8888
 
 #defines what html file to open. Says to open the bar time series
 class URLHandler(tornado.web.RequestHandler):
-    def get(self):
-        get_dict = self.request.arguments
+    def post(self):
+        urls = self.get_argument('url')
+        print urls
         self.write({"test": 1});
 
 #says what file to open based on the url paths
