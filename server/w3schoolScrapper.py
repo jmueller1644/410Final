@@ -11,44 +11,13 @@ from cStringIO import StringIO
 from stemming.porter2 import stem
 import string
 from sklearn import svm
-import learningAlgorithm
+from learningAlgorithm import ToVS
+from learningAlgorithm import learn
+from learningAlgorithm import predict
 
 def scrapeFile(path):
     with open(path,"rb") as f:
             return pq(html.fromstring(unicode(f.read(),errors='ignore'))).remove("script").remove("style")
-
-def ToVS(text):
-    VS=dict()
-    text=text.lower();
-    
-    VS["#!"]=len(re.findall("!",text))
-    VS["#?"]=len(re.findall("\\?",text))
-    VS["#()"]=len(re.findall("\\(|\\)",text))
-    VS["#numbers"]=len(re.findall("\\d+",text))
-    VS["##"]=len(re.findall("#",text))
-    VS["#{}"]=len(re.findall("\\{|\\}",text))
-    VS["#[]"]=len(re.findall("\\[|\\]",text))
-    VS["#comparison"]=len(re.findall("<|>|=",text))
-    VS['#"']=len(re.findall('"',text))
-    VS['#math']=len(re.findall('\\+|\\-|\\*|\\/',text))
-    VS['#_']=len(re.findall('_',text))
-    VS['#oneCharacter']=0
-    for c in string.punctuation:
-        if c!="-" and c!="_":
-            text=text.replace(c," ");
-        else:
-            text=text.replace(c,"");
-    text=stem(re.sub("[\\s|\\d]+"," ",text));
-    text=filter(lambda x: x in string.printable, text)
-    for word in text.split(" "):
-        if word!="":
-            if len(word)==1:
-                VS["#oneCharacter"]+=1
-            elif VS.has_key(word):
-                VS[word]+=1;
-            else:
-                VS[word]=1;
-    return VS;
 
 def scrapeFolder(rootdir,f):
     result=[]
