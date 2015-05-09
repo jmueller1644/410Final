@@ -53,8 +53,10 @@ def WordCountM(docSet):
     for w in words.keys():
         words[w]=words[w]*1.0/total
     return words;
-def scrapeWeb(path):
+def scrapeMain(path):
     return scrapeFile(path)(".main").text();
+def scrapeWeb(path):
+    return scrapeFile(path).text();
 def scrapePDF(path):
     rsrcmgr = PDFResourceManager()
     retstr = StringIO()
@@ -85,8 +87,10 @@ def PrintMostDistinguishingFeatures(ss,cs):
     print("--------------------------")
     
     
-hS=scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/www.huffingtonpost.com",scrapeWeb)
-wS=scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/www.w3schools.com",scrapeWeb)
+hS=scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/www.huffingtonpost.com",scrapeMain)
+wS=scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/www.w3schools.com",scrapeMain)
+wS=wS+scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/pdfTutorial",scrapePDF)
+wS=wS+scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/otherTutorial",scrapeWeb)
 pS=scrapeFolder("C:/Users/Gaston/Desktop/research",scrapePDF)
 print("Scrape - Finished")
 hWC=WordCount(hS)
