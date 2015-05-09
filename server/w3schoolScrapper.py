@@ -91,7 +91,7 @@ hS=scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/www.huffingtonpos
 wS=scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/www.w3schools.com",scrapeMain)
 wS=wS+scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/pdfTutorial",scrapePDF)
 wS=wS+scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/otherTutorial",scrapeWeb)
-pS=scrapeFolder("C:/Users/Gaston/Desktop/research",scrapePDF)
+pS=scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/research",scrapePDF)
 print("Scrape - Finished")
 hWC=WordCount(hS)
 wWC=WordCount(wS)
