@@ -9,12 +9,12 @@ PORT = 8888
 
 class URLHandler(tornado.web.RequestHandler):
     def post(self):
-        urls = [str(url) for url in json.loads(self.get_argument('sites'))]
-        response = requests.get(urls[0])
-        doc = pq(response.content)
+        urls = filter(lambda u: str(u) != 'None', [str(url) for url in json.loads(self.get_argument('sites'))])
+        contents = [requests.get(url).content for url in urls]
+        pyq_docs = [pq(content) for content in contents]
+        inner_texts = [doc.text() for doc in pyq_docs]
 
-        #doc is pyQuery object and response.content is a string containg html of the url
-        self.write({"firstPage": response.content})
+        self.write({"linkTexts": inner_texts})
 
 #says what file to open based on the url paths
 application = tornado.web.Application(handlers=[
