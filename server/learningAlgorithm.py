@@ -99,3 +99,7 @@ def pick_words(lst):
         if x == 'y':
             new_lst.append(word)
     return new_lst
+
+
+if __name__ == '__main__':
+    pick_words(Dimensions)
