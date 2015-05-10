@@ -26,37 +26,39 @@ def scrapeFolder(rootdir,f):
             #print(os.path.join(folder, filename))
             result.append(ToVS(f(os.path.join(folder, filename))))
     return result
+
 def WordCount(docs):
     words=dict()
     total=0
     for d in docs:
         for w in d.keys():
             if(words.has_key(w)):
-                words[w]+=d[w];
+                words[w]+=d[w]
             else:
-                words[w]=d[w];
-            total+=d[w];
+                words[w]=d[w]
+            total+=d[w]
     for w in words.keys():
         words[w]=words[w]*1.0/total
-    return words;
+    return words
+
 def WordCountM(docSet):
-    total=0;
+    total=0
     words=dict()
     for docs in docSet:
         for d in docs:
             for w in d.keys():
                 if(words.has_key(w)):
-                    words[w]+=d[w];
+                    words[w]+=d[w]
                 else:
-                    words[w]=d[w];
-                total+=d[w];
+                    words[w]=d[w]
+                total+=d[w]
     for w in words.keys():
         words[w]=words[w]*1.0/total
-    return words;
+    return words
 def scrapeMain(path):
-    return scrapeFile(path)(".main").text();
+    return scrapeFile(path)(".main").text()
 def scrapeWeb(path):
-    return scrapeFile(path).text();
+    return scrapeFile(path).text()
 def scrapePDF(path):
     rsrcmgr = PDFResourceManager()
     retstr = StringIO()
@@ -77,7 +79,7 @@ def scrapePDF(path):
     retstr.close()
     return unicode(str,errors="ignore")
 def SortByDivision(ss,cs):
-    items=ss.items();
+    items=ss.items()
     return sorted(ss.items(),key=lambda item: (-1.0*item[1]/cs[item[0]], item[0]))
 
 def PrintMostDistinguishingFeatures(ss,cs):
@@ -87,11 +89,11 @@ def PrintMostDistinguishingFeatures(ss,cs):
     print("--------------------------")
     
     
-hS=scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/www.huffingtonpost.com",scrapeMain)
-wS=scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/www.w3schools.com",scrapeMain)
-wS=wS+scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/pdfTutorial",scrapePDF)
-wS=wS+scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/otherTutorial",scrapeWeb)
-pS=scrapeFolder("C:/Users/Gaston/Desktop/CS410Final/410project/research",scrapePDF)
+hS=scrapeFolder("../410project/www.huffingtonpost.com", scrapeMain)
+wS=scrapeFolder("../410project/www.w3schools.com", scrapeMain)
+wS=wS+scrapeFolder("../410project/pdfTutorial", scrapePDF)
+wS=wS+scrapeFolder("../410project/otherTutorial", scrapeWeb)
+pS=scrapeFolder("../410project/research", scrapePDF)
 print("Scrape - Finished")
 hWC=WordCount(hS)
 wWC=WordCount(wS)
