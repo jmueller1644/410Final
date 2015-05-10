@@ -55,6 +55,7 @@ class URLHandler(tornado.web.RequestHandler):
         urls = filter(lambda u: str(u) != 'None', [str(url) for url in json.loads(self.get_argument('sites'))])
         inner_texts = []
         for url in urls:
+            print url
             if is_pdf(url):
                 inner_texts.append(pdf_from_url_to_txt(url))
             else:
@@ -63,7 +64,7 @@ class URLHandler(tornado.web.RequestHandler):
         # pyq_docs = [pq(content).remove("script").remove("style") for content in contents]
         # inner_texts = [doc("body").text() for doc in pyq_docs]
 
-        model_file = open('model.p', 'rb')
+        model_file = open('knn_model.p', 'rb')
         model = pickle.load(model_file)
         predictions = [predict(model, text) for text in inner_texts]
         #print predictions

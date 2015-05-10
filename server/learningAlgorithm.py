@@ -64,7 +64,7 @@ def MapToEvalVS(bag):
     for w in bag:
         total+=bag[w];
     for w in Dimensions:
-        if(bag.has_key(w) and total!=0):
+        if bag.has_key(w) and total != 0:
             v.append(bag[w]*1.0/total)
         else:
             v.append(0)
@@ -83,10 +83,10 @@ def learn(cat1,cat2,cat3):
         X.append(MapToEvalVS(d));
         Y.append(2)
 
-    clf = svm.SVC(verbose=True)
+    #clf = svm.SVC(verbose=True)
     #clf=svm.SVC()
     #clf = OneVsOneClassifier(svm.SVC())
-    #clf=KNeighborsClassifier(weights='distance')
+    clf=KNeighborsClassifier(weights='distance')
     clf.fit(X, Y)
     return clf
 
