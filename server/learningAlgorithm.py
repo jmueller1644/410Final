@@ -65,7 +65,7 @@ def MapToEvalVS(bag, idf):
     for w in bag:
         total+=bag[w];
     for w in Dimensions:
-        if(bag.has_key(w) and total!=0):
+        if bag.has_key(w) and total != 0:
             v.append(bag[w]*1.0/total*idf[w])
         else:
             v.append(0)

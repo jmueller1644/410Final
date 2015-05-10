@@ -58,8 +58,10 @@ def WordCountM(docSet):
     return words
 def scrapeMain(path):
     return scrapeFile(path)(".main").text()
+
 def scrapeWeb(path):
     return scrapeFile(path).text()
+
 def scrapePDF(path):
     rsrcmgr = PDFResourceManager()
     retstr = StringIO()
@@ -79,6 +81,7 @@ def scrapePDF(path):
     str = retstr.getvalue()
     retstr.close()
     return unicode(str,errors="ignore")
+    
 def SortByDivision(ss,cs):
     items=ss.items()
     return sorted(ss.items(),key=lambda item: (-1.0*item[1]/cs[item[0]], item[0]))
@@ -130,6 +133,6 @@ if __name__ == '__main__':
     PrintMostDistinguishingFeatures(pB,tWC)
 
     print 'STARTING MODEL CREATION'
-    model_file =  open('svm_model.p', 'wb')
+    model_file =  open('knn_model.p', 'wb')
     pickle.dump(learn(hS,wS,pS), model_file)
     model_file.close()
