@@ -82,7 +82,11 @@ def learn(cat1,cat2,cat3):
     for d in cat3:
         X.append(MapToEvalVS(d));
         Y.append(2)
-    clf = svm.SVC(verbose=True)
+
+    #clf = svm.SVC(verbose=True)
+    #clf=svm.SVC()
+    #clf = OneVsOneClassifier(svm.SVC())
+    clf=KNeighborsClassifier(weights='distance')
     clf.fit(X, Y)
     return clf
 
@@ -97,7 +101,3 @@ def pick_words(lst):
         if x == 'y':
             new_lst.append(word)
     return new_lst
-
-
-if __name__ == '__main__':
-    pick_words(Dimensions)
