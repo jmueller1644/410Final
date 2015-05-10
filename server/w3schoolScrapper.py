@@ -14,6 +14,7 @@ from sklearn import svm
 from learningAlgorithm import ToVS
 from learningAlgorithm import learn
 from learningAlgorithm import predict
+import pickle
 
 def scrapeFile(path):
     with open(path,"rb") as f:
@@ -87,13 +88,30 @@ def PrintMostDistinguishingFeatures(ss,cs):
     for i in range(100):
         print(ss[i][0], ss[i][1],ss[i][1]/cs[ss[i][0]])
     print("--------------------------")
+
+def compareVals(key):
+    return hWC[key]/tWC[key],wWC[key]/tWC[key],pWC[key]/tWC[key]
     
     
-hS=scrapeFolder("../410project/www.huffingtonpost.com", scrapeMain)
-wS=scrapeFolder("../410project/www.w3schools.com", scrapeMain)
-wS=wS+scrapeFolder("../410project/pdfTutorial", scrapePDF)
-wS=wS+scrapeFolder("../410project/otherTutorial", scrapeWeb)
-pS=scrapeFolder("../410project/research", scrapePDF)
+# print 1
+# hS=scrapeFolder("../410project/www.huffingtonpost.com", scrapeMain)
+# print 2
+# wS=scrapeFolder("../410project/www.w3schools.com", scrapeMain)
+# print 3
+# wS=wS+scrapeFolder("../410project/pdfTutorial", scrapePDF)
+# print 4
+# wS=wS+scrapeFolder("../410project/otherTutorial", scrapeWeb)
+# print 5
+# pickle.dump([hS, wS, pS], open('data.p', 'wb'))
+pickle_file = open('data.p', 'rb')
+arr = pickle.load(pickle_file)
+hS = arr[0]
+wS = arr[1]
+pS = arr[2]
+pickle_file.close()
+print hS
+
+print 'end'
 print("Scrape - Finished")
 hWC=WordCount(hS)
 wWC=WordCount(wS)
@@ -111,6 +129,4 @@ PrintMostDistinguishingFeatures(wB,tWC)
 print("Research:")
 PrintMostDistinguishingFeatures(pB,tWC)
 
-def compareVals(key):
-    return hWC[key]/tWC[key],wWC[key]/tWC[key],pWC[key]/tWC[key]
-model=learn(hS,wS,pS)
+#pickle.dump(learn(hS,wS,pS), 'model.p')

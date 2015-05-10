@@ -82,7 +82,7 @@ def learn(cat1,cat2,cat3):
     for d in cat3:
         X.append(MapToEvalVS(d));
         Y.append(2)
-    clf = svm.SVC()
+    clf = svm.SVC(verbose=True)
     clf.fit(X, Y)
     return clf
 
