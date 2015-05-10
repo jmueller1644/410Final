@@ -13,5 +13,5 @@
   "permissions": [
     "http://localhost/*"
   ],
-  "web_accessible_resources": ["icons/green_circle.png"]
+  "web_accessible_resources": ["icons/green_circle.png", "icons/blue_circle.png", "icons/red_circle.png"]
 }

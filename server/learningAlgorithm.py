@@ -76,17 +76,17 @@ def learn(cat1,cat2,cat3):
     for d in cat1:
         X.append(MapToEvalVS(d));
         Y.append(0)
-    for d in cat1:
+    for d in cat2:
         X.append(MapToEvalVS(d));
         Y.append(1)
     for d in cat3:
         X.append(MapToEvalVS(d));
         Y.append(2)
 
-    #clf = svm.SVC(verbose=True)
+    clf = svm.SVC(verbose=True)
     #clf=svm.SVC()
     #clf = OneVsOneClassifier(svm.SVC())
-    clf=KNeighborsClassifier(weights='distance')
+    #clf=KNeighborsClassifier(weights='distance')
     clf.fit(X, Y)
     return clf
 

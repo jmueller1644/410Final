@@ -103,30 +103,33 @@ def compareVals(key):
 # wS=wS+scrapeFolder("../410project/otherTutorial", scrapeWeb)
 # print 5
 # pickle.dump([hS, wS, pS], open('data.p', 'wb'))
-pickle_file = open('data.p', 'rb')
-arr = pickle.load(pickle_file)
-hS = arr[0]
-wS = arr[1]
-pS = arr[2]
-pickle_file.close()
-print hS
 
-print 'end'
-print("Scrape - Finished")
-hWC=WordCount(hS)
-wWC=WordCount(wS)
-pWC=WordCount(pS)
-print("Partial Count - Finished")
-tWC=WordCountM([hS, wS, pS])
-print("Finished")
-hB=SortByDivision(hWC,tWC)
-wB=SortByDivision(wWC,tWC)
-pB=SortByDivision(pWC,tWC)
-print("Huffington:")
-PrintMostDistinguishingFeatures(hB,tWC)
-print("W3School:")
-PrintMostDistinguishingFeatures(wB,tWC)
-print("Research:")
-PrintMostDistinguishingFeatures(pB,tWC)
+if __name__ == '__main__':
+    pickle_file = open('data.p', 'rb')
+    arr = pickle.load(pickle_file)
+    hS = arr[0]
+    wS = arr[1]
+    pS = arr[2]
+    pickle_file.close()
 
-#pickle.dump(learn(hS,wS,pS), 'model.p')
+    print("Scrape - Finished")
+    hWC=WordCount(hS)
+    wWC=WordCount(wS)
+    pWC=WordCount(pS)
+    print("Partial Count - Finished")
+    tWC=WordCountM([hS, wS, pS])
+    print("Finished")
+    hB=SortByDivision(hWC,tWC)
+    wB=SortByDivision(wWC,tWC)
+    pB=SortByDivision(pWC,tWC)
+    print("Huffington:")
+    PrintMostDistinguishingFeatures(hB,tWC)
+    print("W3School:")
+    PrintMostDistinguishingFeatures(wB,tWC)
+    print("Research:")
+    PrintMostDistinguishingFeatures(pB,tWC)
+
+    print 'STARTING MODEL CREATION'
+    model_file =  open('svm_model.p', 'wb')
+    pickle.dump(learn(hS,wS,pS), model_file)
+    model_file.close()
