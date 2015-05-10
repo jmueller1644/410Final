@@ -5,6 +5,7 @@ import string
 from sklearn import svm
 from sklearn.multiclass import OneVsOneClassifier
 from sklearn.neighbors import KNeighborsClassifier
+import numpy as np
 
 
 def normalize(word):
@@ -58,40 +59,58 @@ def ToVS(text):
                 VS[word]=1
     return VS
 
-def MapToEvalVS(bag):
+def MapToEvalVS(bag, idf):
     v=[]
     total=0
     for w in bag:
         total+=bag[w];
     for w in Dimensions:
         if(bag.has_key(w) and total!=0):
-            v.append(bag[w]*1.0/total)
+            v.append(bag[w]*1.0/total*idf[w])
         else:
             v.append(0)
     return v;
 
+def get_IDF(cats):
+    qWD=dict()
+    qD=1;
+    for w in Dimensions:
+        qWD[w]=1;
+    for c in cats:
+        for d in c:
+            qD+=1
+            for w in d:
+                if w in Dimensions:
+                    qWD[w]+=1
+    result=dict()
+    for w in qWD.keys():
+        result[w]=math.log(qD/qWD[w])
+
 def learn(cat1,cat2,cat3):
     X = []
     Y = []
+    IDF=get_IF([cat1,cat2,cat3])
     for d in cat1:
-        X.append(MapToEvalVS(d));
+        X.append(MapToEvalVS(d,IDF));
         Y.append(0)
     for d in cat2:
-        X.append(MapToEvalVS(d));
+        X.append(MapToEvalVS(d,IDF));
         Y.append(1)
     for d in cat3:
-        X.append(MapToEvalVS(d));
+        X.append(MapToEvalVS(d,IDF));
         Y.append(2)
 
-    clf = svm.SVC(verbose=True)
+    X=np.array(X)
+    Y=np.array(Y)
+    #clf = svm.SVC(verbose=True)
     #clf=svm.SVC()
-    #clf = OneVsOneClassifier(svm.SVC())
+    clf = OneVsOneClassifier(svm.SVC())
     #clf=KNeighborsClassifier(weights='distance')
     clf.fit(X, Y)
-    return clf
+    return (clf,IDF)
 
 def predict(learner,doc):
-    return learner.predict(MapToEvalVS(ToVS(doc)))[0]
+    return learner[0].predict(MapToEvalVS(ToVS(doc,learner[1])))[0]
 
 def pick_words(lst):
     new_lst = list()
