@@ -113,3 +113,4 @@ PrintMostDistinguishingFeatures(pB,tWC)
 
 def compareVals(key):
     return hWC[key]/tWC[key],wWC[key]/tWC[key],pWC[key]/tWC[key]
+model=learn(hS,wS,pS)

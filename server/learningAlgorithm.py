@@ -3,6 +3,8 @@ from cStringIO import StringIO
 from stemming.porter2 import stem
 import string
 from sklearn import svm
+from sklearn.multiclass import OneVsOneClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
 
 def normalize(word):
@@ -85,7 +87,7 @@ def learn(cat1,cat2,cat3):
     return clf
 
 def predict(learner,doc):
-    return learner.predict(MapToEvalVS(ToVS(doc)))
+    return learner.predict(MapToEvalVS(ToVS(doc)))[0]
 
 def pick_words(lst):
     new_lst = list()
