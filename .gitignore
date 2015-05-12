@@ -2,3 +2,4 @@ server/learningAlgorithm.pyc
 410Project/*
 server/model.p
 server/svn_model.p
+*.pyc

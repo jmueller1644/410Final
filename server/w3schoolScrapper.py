@@ -1,32 +1,11 @@
-from lxml import html
-from pyquery import PyQuery as pq
-import os
-import math
-import re
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.converter import TextConverter
-from pdfminer.layout import LAParams
-from pdfminer.pdfpage import PDFPage
-from cStringIO import StringIO
-from stemming.porter2 import stem
-import string
-from sklearn import svm
+import pickle
 from learningAlgorithm import ToVS
 from learningAlgorithm import learn
 from learningAlgorithm import predict
-import pickle
-
-def scrapeFile(path):
-    with open(path,"rb") as f:
-            return pq(html.fromstring(unicode(f.read(),errors='ignore'))).remove("script").remove("style")
-
-def scrapeFolder(rootdir,f):
-    result=[]
-    for folder, subs, files in os.walk(rootdir):
-        for filename in files:
-            #print(os.path.join(folder, filename))
-            result.append(ToVS(f(os.path.join(folder, filename))))
-    return result
+from inputReading import scrapeFolder
+from inputReading import scrapeMain
+from inputReading import scrapeWeb
+from inputReading import scrapePDF
 
 def WordCount(docs):
     words=dict()
@@ -56,31 +35,6 @@ def WordCountM(docSet):
     for w in words.keys():
         words[w]=words[w]*1.0/total
     return words
-def scrapeMain(path):
-    return scrapeFile(path)(".main").text()
-
-def scrapeWeb(path):
-    return scrapeFile(path).text()
-
-def scrapePDF(path):
-    rsrcmgr = PDFResourceManager()
-    retstr = StringIO()
-    codec = 'utf-8'
-    laparams = LAParams()
-    device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
-    fp = file(path, 'rb')
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
-    password = ""
-    maxpages = 0
-    caching = True
-    pagenos=set()
-    for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages, password=password,caching=caching, check_extractable=True):
-        interpreter.process_page(page)
-    fp.close()
-    device.close()
-    str = retstr.getvalue()
-    retstr.close()
-    return unicode(str,errors="ignore")
     
 def SortByDivision(ss,cs):
     items=ss.items()
@@ -96,16 +50,19 @@ def compareVals(key):
     return hWC[key]/tWC[key],wWC[key]/tWC[key],pWC[key]/tWC[key]
     
     
-# print 1
-# hS=scrapeFolder("../410project/www.huffingtonpost.com", scrapeMain)
-# print 2
-# wS=scrapeFolder("../410project/www.w3schools.com", scrapeMain)
-# print 3
-# wS=wS+scrapeFolder("../410project/pdfTutorial", scrapePDF)
-# print 4
-# wS=wS+scrapeFolder("../410project/otherTutorial", scrapeWeb)
-# print 5
-# pickle.dump([hS, wS, pS], open('data.p', 'wb'))
+#print 1
+#hS=scrapeFolder("../410project/www.huffingtonpost.com", scrapeMain, ToVS)
+#print 2
+#wS=scrapeFolder("../410project/www.w3schools.com", scrapeMain, ToVS)
+#print 3
+#wS=wS+scrapeFolder("../410project/pdfTutorial", scrapePDF, ToVS)
+#print 4
+#wS=wS+scrapeFolder("../410project/otherTutorial", scrapeWeb, ToVS)
+#print 5
+#pS=scrapeFolder("../410project/research",scrapePDF, ToVS)
+#pickle_file = open('data.p', 'wb')
+#pickle.dump([hS, wS, pS], pickle_file)
+#pickle_file.close()
 
 if __name__ == '__main__':
     pickle_file = open('data.p', 'rb')
@@ -115,24 +72,24 @@ if __name__ == '__main__':
     pS = arr[2]
     pickle_file.close()
 
-    print("Scrape - Finished")
-    hWC=WordCount(hS)
-    wWC=WordCount(wS)
-    pWC=WordCount(pS)
-    print("Partial Count - Finished")
-    tWC=WordCountM([hS, wS, pS])
-    print("Finished")
-    hB=SortByDivision(hWC,tWC)
-    wB=SortByDivision(wWC,tWC)
-    pB=SortByDivision(pWC,tWC)
-    print("Huffington:")
-    PrintMostDistinguishingFeatures(hB,tWC)
-    print("W3School:")
-    PrintMostDistinguishingFeatures(wB,tWC)
-    print("Research:")
-    PrintMostDistinguishingFeatures(pB,tWC)
+    #print("Scrape - Finished")
+    #hWC=WordCount(hS)
+    #wWC=WordCount(wS)
+    #pWC=WordCount(pS)
+    #print("Partial Count - Finished")
+    #tWC=WordCountM([hS, wS, pS])
+    #print("Finished")
+    #hB=SortByDivision(hWC,tWC)
+    #wB=SortByDivision(wWC,tWC)
+    #pB=SortByDivision(pWC,tWC)
+    #print("Huffington:")
+    #PrintMostDistinguishingFeatures(hB,tWC)
+    #print("W3School:")
+    #PrintMostDistinguishingFeatures(wB,tWC)
+    #print("Research:")
+    #PrintMostDistinguishingFeatures(pB,tWC)
 
     print 'STARTING MODEL CREATION'
-    model_file =  open('knn_model.p', 'wb')
+    model_file =  open('svm_model.p', 'wb')
     pickle.dump(learn(hS,wS,pS), model_file)
     model_file.close()

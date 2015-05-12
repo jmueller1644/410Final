@@ -6,6 +6,7 @@ from sklearn import svm
 from sklearn.multiclass import OneVsOneClassifier
 from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
+import math
 
 
 def normalize(word):
@@ -85,11 +86,12 @@ def get_IDF(cats):
     result=dict()
     for w in qWD.keys():
         result[w]=math.log(qD/qWD[w])
+    return result
 
 def learn(cat1,cat2,cat3):
     X = []
     Y = []
-    IDF=get_IF([cat1,cat2,cat3])
+    IDF=get_IDF([cat1,cat2,cat3])
     for d in cat1:
         X.append(MapToEvalVS(d,IDF));
         Y.append(0)
@@ -107,7 +109,7 @@ def learn(cat1,cat2,cat3):
     clf = OneVsOneClassifier(svm.SVC())
     #clf=KNeighborsClassifier(weights='distance')
     clf.fit(X, Y)
-    return (clf,IDF)
+    return [clf,IDF]
 
 def predict(learner,doc):
     return learner[0].predict(MapToEvalVS(ToVS(doc,learner[1])))[0]
