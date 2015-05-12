@@ -7,13 +7,62 @@ import numpy as np
 from sklearn import svm
 from sklearn.multiclass import OneVsOneClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn import linear_model
+from sklearn.naive_bayes import MultinomialNB
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 
 from sklearn.pipeline import Pipeline
 
-def learn(cat1,cat2,cat3,feature_type,learner_type):
+
+
+def normalize_text(text):
+    return string.join([stem(w) for w in filter(lambda x: (x in string.printable) and (not (x in string.punctuation)), text.lower()).split(" ")]," ")
+
+class AbstractLearner( object ):
+    def predict( self,doc ):
+        return self.__predict(normalize_text(doc))
+    def train( self,docs,classifications ):
+        raise self.__train([normalize_text(d) for d in docs],classifications);
+    def __predict( self,doc ):
+        raise NotImplementedError( "Should have implemented this" )
+    def __train( self,docs,classifications ):
+        raise NotImplementedError( "Should have implemented this" )
+class OffLineSKLearner:
+    __pipeline=None
+    def __init__(self, pipe):
+        self.__pipeline=pipe
+        
+    def __predict(self, doc):
+        return self.__pipeline.predict(doc)[0]
+    
+    def __train( self,docs,classifications ):
+        raise NotImplementedError( "This is an offline learner" )
+class OnLineSKLearner:
+    __transformers=None
+    __classifier=None
+    def __init__(self, t, c, docs, targets):
+        self.__transformers=t
+        self.__classifier=c
+        toFit=[normalize_text(d) for d in docs]
+        for trans in self.__transformers:
+            toFit=trans.fit_transform(toFit)
+        self.__classifier.partial_fit(toFit, targets, np.array([0, 1, 2]))
+        
+    def transform(self, doc):
+        d=doc
+        for t in self.__transformers:
+            d=t.transform(d)
+        return d
+        
+    def __predict(self, doc):
+        return self.__classifier.predict(self.transform(doc))[0]
+    
+    def __train( self,docs,classifications ):
+        self.__classifier.partial_fit(self.transform(docs),np.array(classifications))
+
+def learnPipe(cat1,cat2,cat3,feature_type,learner_type):
     clf=None
     if learner_type=="svm":
         clf=svm.SVC(verbose=True)
@@ -35,6 +84,8 @@ def learn(cat1,cat2,cat3,feature_type,learner_type):
     elif feature_type=="bw":
         text_clf = Pipeline([('vect', CountVectorizer()),
                             ('clf', clf)])
+    elif feature_type=="hashing":
+        vectorizer = HashingVectorizer(decode_error='ignore', n_features=2 ** 17, non_negative=True)
     else:
         raise NameError('Not a valid learner')
 
@@ -45,8 +96,38 @@ def learn(cat1,cat2,cat3,feature_type,learner_type):
         targets.append(1)
     for t in cat3:
         targets.append(2)
-    text_clf.fit(cat1+cat2+cat3, np.array(targets))
-    return text_clf
+    text_clf.fit([nomalizeText(d) for d in cat1+cat2+cat3], np.array(targets))
+    return OffLineSKLearner(text_clf)
 
-def predict(learner,doc):
-    return learner.predict(doc)
+def learnOnlineLearner(cat1,cat2,cat3,feature_type,learner_type):
+    clf=None
+    if learner_type=="sgd":
+        clf=linear_model.SGDClassifier()
+    elif learner_type=="multinomial_nb":
+        clf=MultinomialNB(alpha=0.01)
+    elif learner_type=="passive_aggresive":
+        clf=linear_model.PassiveAggressiveClassifier()
+    elif learner_type=="perceptron":
+        clf=linear_model.Perceptron()
+    else:
+        raise NameError('Not a valid learner')
+
+    if feature_type=="tfidf":
+        transformers=[CountVectorizer(), TfidfTransformer()]
+    elif feature_type=="tf":
+        transformers=[CountVectorizer(), TfidfTransformer(use_idf=False)]
+    elif feature_type=="bw":
+        transformers=[CountVectorizer()]
+    elif feature_type=="hashing":
+        vectorizer = HashingVectorizer(decode_error='ignore', n_features=2 ** 17, non_negative=True)
+    else:
+        raise NameError('Not a valid learner')
+
+    targets=[]
+    for t in cat1:
+        targets.append(0)
+    for t in cat2:
+        targets.append(1)
+    for t in cat3:
+        targets.append(2)
+    return OnLineSKLearner(transformers,clf,cat1+cat2+cat3,np.array(targets))

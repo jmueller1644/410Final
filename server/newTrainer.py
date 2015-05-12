@@ -1,6 +1,6 @@
 import pickle
-from learningAlgorithm2 import learn
-from learningAlgorithm2 import predict
+from learningAlgorithm2 import learnPipe
+from learningAlgorithm2 import learnOnlineLearner
 from inputReading import scrapeFolder
 from inputReading import scrapeMain
 from inputReading import scrapeWeb
@@ -8,13 +8,10 @@ from inputReading import scrapePDF
     
 def do_nothing(v):
     return v
-def save_model(cat1,cat2,cat3,ft,lt):
+
+def save_model(cat1,cat2,cat3,ft,lt,f):
     with open(ft+'_'+lt+'_model.p', 'wb') as pickle_file:
-        pickle.dump(learn(cat1,cat2,cat3,ft,lt), pickle_file)
-    
-
-
-
+        pickle.dump(f(cat1,cat2,cat3,ft,lt), pickle_file)
 
 if __name__ == '__main__':
     print 1
@@ -28,6 +25,8 @@ if __name__ == '__main__':
     print 5
     pS=scrapeFolder("../410project/research",scrapePDF, do_nothing)
 
-    for ft in ["tfidf","tf","bw"]:
+    for ft in ["tfidf","tf","bw","hashing"]:
         for lt in ["svm","svm_ava","knn"]:
-            save_model(hS,wS,pS,ft,lt)
+            save_model(hS,wS,pS,ft,lt,learnPipe)
+        for lt in ["sgd","multinomial_nb","passive_aggresive","perceptron"]:
+            save_model(hS,wS,pS,ft,lt,learnOnlineLearner)
