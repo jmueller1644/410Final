@@ -96,7 +96,7 @@ def learnPipe(cat1,cat2,cat3,feature_type,learner_type):
         targets.append(1)
     for t in cat3:
         targets.append(2)
-    text_clf.fit([nomalizeText(d) for d in cat1+cat2+cat3], np.array(targets))
+    text_clf.fit([normalize_text(d) for d in cat1+cat2+cat3], np.array(targets))
     return OffLineSKLearner(text_clf)
 
 def learnOnlineLearner(cat1,cat2,cat3,feature_type,learner_type):
