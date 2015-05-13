@@ -27,7 +27,7 @@ class OffLineSKLearner:
         self.__pipeline=pipe
         
     def predict(self, doc):
-        return self.__pipeline.predict(normalize_text(doc))[0]
+        return self.__pipeline.predict([normalize_text(doc)])[0]
     
     def train( self,docs,classifications ):
         raise NotImplementedError( "This is an offline learner" )
