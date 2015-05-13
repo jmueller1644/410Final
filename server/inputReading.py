@@ -12,6 +12,9 @@ import requests
 from stemming.porter2 import stem
 import string
 
+PDF = 'application/pdf'
+HTML = 'text/html'
+
 def scrapeFile(path):
     with open(path,"rb") as f:
             return pq(html.fromstring(unicode(f.read(),errors='ignore'))).remove("script").remove("style")
@@ -49,9 +52,6 @@ def scrapePDF(path):
     str = retstr.getvalue()
     retstr.close()
     return unicode(str,errors="ignore")
-
-PDF = 'application/pdf'
-HTML = 'text/html'
 
 def is_pdf(request_result):
     if PDF in request_result.headers['content-type']:
