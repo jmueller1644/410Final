@@ -4,7 +4,6 @@ import tornado.web
 import json
 import os
 from pyquery import PyQuery as pq
-from learningAlgorithm import predict
 from inputReading import get_url_text
 import pickle
 PORT = 8888
@@ -19,9 +18,9 @@ class URLHandler(tornado.web.RequestHandler):
         # pyq_docs = [pq(content).remove("script").remove("style") for content in contents]
         # inner_texts = [doc("body").text() for doc in pyq_docs]
 
-        model_file = open('knn_model.p', 'rb')
+        model_file = open('tfidf_sgd_model.p', 'rb')
         model = pickle.load(model_file)
-        predictions = [predict(model, text) for text in inner_texts]
+        predictions = [model.predict(text) for text in inner_texts]
         #print predictions
         self.write({"results": predictions})
 

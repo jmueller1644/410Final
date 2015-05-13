@@ -3,3 +3,4 @@ server/learningAlgorithm.pyc
 server/model.p
 server/svn_model.p
 *.pyc
+*.p

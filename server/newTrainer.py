@@ -5,6 +5,7 @@ from inputReading import scrapeFolder
 from inputReading import scrapeMain
 from inputReading import scrapeWeb
 from inputReading import scrapePDF
+from learningAlgorithm2 import normalize_text
     
 def do_nothing(v):
     return v
@@ -25,6 +26,10 @@ if __name__ == '__main__':
     print 5
     pS=scrapeFolder("../410project/research",scrapePDF, do_nothing)
 
+    hS=[normalize_text(d) for d in hS]
+    wS=[normalize_text(d) for d in wS]
+    pS=[normalize_text(d) for d in pS]
+    
     for ft in ["tfidf","tf","bw","hashing"]:
         for lt in ["svm","svm_ava","knn"]:
             save_model(hS,wS,pS,ft,lt,learnPipe)

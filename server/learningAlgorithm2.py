@@ -12,6 +12,7 @@ from sklearn.naive_bayes import MultinomialNB
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_extraction.text import HashingVectorizer
 
 from sklearn.pipeline import Pipeline
 
@@ -20,46 +21,38 @@ from sklearn.pipeline import Pipeline
 def normalize_text(text):
     return string.join([stem(w) for w in filter(lambda x: (x in string.printable) and (not (x in string.punctuation)), text.lower()).split(" ")]," ")
 
-class AbstractLearner( object ):
-    def predict( self,doc ):
-        return self.__predict(normalize_text(doc))
-    def train( self,docs,classifications ):
-        raise self.__train([normalize_text(d) for d in docs],classifications);
-    def __predict( self,doc ):
-        raise NotImplementedError( "Should have implemented this" )
-    def __train( self,docs,classifications ):
-        raise NotImplementedError( "Should have implemented this" )
 class OffLineSKLearner:
     __pipeline=None
     def __init__(self, pipe):
         self.__pipeline=pipe
         
-    def __predict(self, doc):
-        return self.__pipeline.predict(doc)[0]
+    def predict(self, doc):
+        return self.__pipeline.predict(normalize_text(doc))[0]
     
-    def __train( self,docs,classifications ):
+    def train( self,docs,classifications ):
         raise NotImplementedError( "This is an offline learner" )
+    
 class OnLineSKLearner:
     __transformers=None
     __classifier=None
     def __init__(self, t, c, docs, targets):
         self.__transformers=t
         self.__classifier=c
-        toFit=[normalize_text(d) for d in docs]
+        toFit=docs
         for trans in self.__transformers:
             toFit=trans.fit_transform(toFit)
         self.__classifier.partial_fit(toFit, targets, np.array([0, 1, 2]))
         
-    def transform(self, doc):
-        d=doc
+    def transform(self, docs):
+        d=[normalize_text(i) for i in docs]
         for t in self.__transformers:
             d=t.transform(d)
         return d
         
-    def __predict(self, doc):
-        return self.__classifier.predict(self.transform(doc))[0]
+    def predict(self, doc):
+        return self.__classifier.predict(self.transform([doc]))[0]
     
-    def __train( self,docs,classifications ):
+    def train( self,docs,classifications ):
         self.__classifier.partial_fit(self.transform(docs),np.array(classifications))
 
 def learnPipe(cat1,cat2,cat3,feature_type,learner_type):
@@ -85,7 +78,8 @@ def learnPipe(cat1,cat2,cat3,feature_type,learner_type):
         text_clf = Pipeline([('vect', CountVectorizer()),
                             ('clf', clf)])
     elif feature_type=="hashing":
-        vectorizer = HashingVectorizer(decode_error='ignore', n_features=2 ** 17, non_negative=True)
+        text_clf = Pipeline([('vect', HashingVectorizer(decode_error='ignore', n_features=2 ** 17, non_negative=True)),
+                            ('clf', clf)])
     else:
         raise NameError('Not a valid learner')
 
@@ -96,7 +90,7 @@ def learnPipe(cat1,cat2,cat3,feature_type,learner_type):
         targets.append(1)
     for t in cat3:
         targets.append(2)
-    text_clf.fit([normalize_text(d) for d in cat1+cat2+cat3], np.array(targets))
+    text_clf.fit(cat1+cat2+cat3, np.array(targets))
     return OffLineSKLearner(text_clf)
 
 def learnOnlineLearner(cat1,cat2,cat3,feature_type,learner_type):
@@ -119,7 +113,7 @@ def learnOnlineLearner(cat1,cat2,cat3,feature_type,learner_type):
     elif feature_type=="bw":
         transformers=[CountVectorizer()]
     elif feature_type=="hashing":
-        vectorizer = HashingVectorizer(decode_error='ignore', n_features=2 ** 17, non_negative=True)
+        transformers = [HashingVectorizer(decode_error='ignore', n_features=2 ** 17, non_negative=True)]
     else:
         raise NameError('Not a valid learner')
 
