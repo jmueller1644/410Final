@@ -9,6 +9,8 @@ import pickle
 PORT = 8888
 model = ''
 model_file_name='tfidf_perceptron_model.p'
+url_dict = dict()
+URL_CACHED = 'CACHED'
 
 class TrainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -29,10 +31,15 @@ class URLHandler(tornado.web.RequestHandler):
         urls = filter(lambda u: str(u) != 'None', [str(url) for url in json.loads(self.get_argument('sites'))])
         inner_texts = []
         for url in urls:
-            print url
-            inner_texts.append(get_url_text(url))
+            if url in url_dict:
+                inner_texts.append(url)
+            else:
+                inner_texts.append(get_url_text(url))
+
         
-        predictions = [model.predict(text) for text in inner_texts]
+        predictions = [model.predict(text) if text not in url_dict else url_dict[text] for text in inner_texts]
+        for i in range(len(urls)):
+            url_dict[urls[i]] = predictions[i]
         self.write({"results": predictions})
 
 #says what file to open based on the url paths
